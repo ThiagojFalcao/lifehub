@@ -9,6 +9,15 @@
   let message = $state('')
   let habitName = $state('')
 
+  let entries = $state([])
+  let journal = $state({
+    date: new Date().toISOString().slice(0, 10),
+    content: '',
+    mood: '',
+    tags: '',
+  })
+  let journalMsg = $state('')
+
   let form = $state({
     habit_id: '',
     date: new Date().toISOString().slice(0, 10),
@@ -27,6 +36,51 @@
       habits = h
       forest = f.days
       if (!form.habit_id && h.length) form.habit_id = String(h[0].id)
+    } catch (e) {
+      error = String(e)
+    }
+  }
+
+  async function loadJournal() {
+    try {
+      entries = await api('/api/journal?limit=14')
+    } catch (e) {
+      error = String(e)
+    }
+  }
+
+  async function saveJournal(e) {
+    e.preventDefault()
+    try {
+      const tags = journal.tags
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean)
+      await api(`/api/journal/${journal.date}`, {
+        method: 'PUT',
+        body: {
+          content: journal.content,
+          mood: journal.mood || null,
+          tags,
+        },
+      })
+      journalMsg = 'Diário guardado'
+      setTimeout(() => (journalMsg = ''), 2500)
+      await loadJournal()
+    } catch (err) {
+      error = String(err)
+    }
+  }
+
+  async function editEntry(d) {
+    try {
+      const entry = await api(`/api/journal/${d}`)
+      journal = {
+        date: d,
+        content: entry.content,
+        mood: entry.mood || '',
+        tags: (entry.tags || []).join(', '),
+      }
     } catch (e) {
       error = String(e)
     }
@@ -70,7 +124,10 @@
     }
   }
 
-  onMount(load)
+  onMount(() => {
+    load()
+    loadJournal()
+  })
 </script>
 
 <header>
@@ -108,7 +165,7 @@
   <section class="panel form-panel">
     <div class="panel-head">
       <h2>Registrar sessão</h2>
-      <p>Uma ocorrencia de un hábito, com dados ricos</p>
+      <p>Una ocurrencia de un hábito, con datos ricos</p>
     </div>
     <form onsubmit={logSession}>
       <label class="field">
@@ -152,6 +209,61 @@
     {/if}
   </section>
 </main>
+
+<section class="panel journal-panel">
+  <div class="panel-head">
+    <h2>Journal</h2>
+    <p>Nota diária — markdown + frontmatter</p>
+  </div>
+  <form onsubmit={saveJournal}>
+    <label class="field">
+      <span>Data</span>
+      <input type="date" bind:value={journal.date} />
+    </label>
+    <label class="field">
+      <span>Contenido (markdown)</span>
+      <textarea
+        rows="4"
+        bind:value={journal.content}
+        placeholder="Qué hiciste hoy? Qué aprendiste?"
+      ></textarea>
+    </label>
+    <label class="field">
+      <span>Estado de ánimo</span>
+      <select bind:value={journal.mood}>
+        <option value="">—</option>
+        <option value="great">great</option>
+        <option value="good">good</option>
+        <option value="neutral">neutral</option>
+        <option value="bad">bad</option>
+      </select>
+    </label>
+    <label class="field">
+      <span>Tags (separadas por coma)</span>
+      <input type="text" bind:value={journal.tags} placeholder="foco, tech, familia" />
+    </label>
+    <button type="submit" class="primary">Guardar diário</button>
+    {#if journalMsg}<p class="ok">{journalMsg}</p>{/if}
+  </form>
+
+  {#if entries.length}
+    <div class="divider"></div>
+    <div class="panel-head">
+      <h2>Entradas recientes</h2>
+    </div>
+    <ul class="entry-list">
+      {#each entries as e}
+        <li>
+          <button class="entry-link" onclick={() => editEntry(e.date)}>
+            <span class="entry-date">{e.date}</span>
+            {#if e.mood}<span class="entry-mood">{e.mood}</span>{/if}
+            <span class="entry-preview">{e.content.slice(0, 60)}</span>
+          </button>
+        </li>
+      {/each}
+    </ul>
+  {/if}
+</section>
 
 <style>
   :global(body) {
@@ -270,6 +382,61 @@
 
   .ok { color: #10b981; font-size: 13px; margin: 2px 0 0; }
   .err { color: #ef4444; font-size: 13px; margin: 2px 0 0; }
+
+  /* ---- Journal ---- */
+  .journal-panel {
+    max-width: 1180px;
+    margin: 24px auto 40px;
+    padding: 22px 24px;
+  }
+  textarea {
+    padding: 9px 12px;
+    font-size: 14px;
+    color: #f7f8f8;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    resize: vertical;
+    min-height: 90px;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: #5e6ad2;
+    box-shadow: 0 0 0 1px rgba(94, 106, 210, 0.25);
+  }
+  .entry-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .entry-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 7px 10px;
+    text-align: left;
+    font-size: 13px;
+    background: transparent;
+    color: #d0d6e0;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .entry-link:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #f7f8f8;
+  }
+  .entry-date { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #8a8f98; min-width: 88px; }
+  .entry-mood { font-size: 11px; font-weight: 510; color: #8a8f98; padding: 1px 6px; border: 1px solid rgba(255,255,255,0.1); border-radius: 9999px; }
+  .entry-preview { flex: 1; color: #62666d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   @media (max-width: 860px) {
     header { flex-wrap: wrap; }
