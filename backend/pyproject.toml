@@ -19,3 +19,13 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff.lint]
+ignore = [
+    # FastAPI usa Depends()/Query() como default de argumento por design
+    # (padrão idiomático do framework, não um defeito de código).
+    "B008",
+    # App local-first: "hoje" é o dia LOCAL do usuário (não UTC). date.today()
+    # é semanticamente correto aqui; forçar UTC mudaria o dia do tracker.
+    "DTZ",
+]

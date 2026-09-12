@@ -14,9 +14,9 @@ from sqlalchemy.orm import sessionmaker
 _db_file = Path(tempfile.mkdtemp()) / "test.db"
 os.environ["LIFEHUB_DATABASE_URL"] = f"sqlite:///{_db_file}"
 
-from app.db import get_db  # noqa: E402
-from app.main import app  # noqa: E402
-from app.models import Base  # noqa: E402
+from app.db import get_db
+from app.main import app
+from app.models import Base
 
 _engine = create_engine(
     f"sqlite:///{_db_file}", connect_args={"check_same_thread": False}

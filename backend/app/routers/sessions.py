@@ -3,7 +3,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..db import get_db
-from ..models import Habit, Session as SessionModel
+from ..models import Habit
+from ..models import Session as SessionModel
 from ..schemas import SessionCreate, SessionOut
 
 router = APIRouter(prefix="/sessions", tags=["sessions"])
