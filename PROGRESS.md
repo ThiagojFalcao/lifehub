@@ -46,12 +46,14 @@ Construção **incremental, feature por feature**, com TDD e CI desde o início.
 - [x] `docs/specs/000-vertical-slice.md` — spec da F1
 - [x] `.github/workflows/ci.yml` — ruff + pytest + build em todo PR
 - [x] Identidade git: `Thiago Falcão <167378662+ThiagojFalcao@users.noreply.github.com>`
-- [x] `gh` CLI instalado (v2.100.0) em `~/.local/bin/gh` + PATH no `~/.profile`
+- [x] `gh` CLI instalado (v2.100.0) + autenticado + repo privado criado + push inicial
 
-**Feature 1 — Vertical slice (tracker + Floresta): ⬜ NÃO INICIADA.**
+**Feature 1 — Vertical slice (tracker + Floresta): 🔄 EM ANDAMENTO (~60%).**
 
-Plano passo a passo em `.hermes/plans/2026-09-12_000704-lifehub-vertical-slice.md`.
-Alvo: FastAPI + SQLite + Svelte 5, TDD com **10 testes backend** passando.
+- [x] **Parte A** — scaffold: `backend/pyproject.toml` (uv), frontend Vite+Svelte 5.
+- [x] **Parte B** — backend TDD completo: models, db, schemas, routers (habits/sessions/forest), serviço puro `compute_forest`. **10 testes passando**, `ruff check` limpo.
+- [ ] **Parte C** — frontend: proxy Vite + `api.js` + `ForestChart.svelte` + `App.svelte`.
+- [ ] **Parte D** — seed demo + smoke test e2e + README final.
 
 ---
 
