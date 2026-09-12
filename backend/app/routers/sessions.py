@@ -31,10 +31,11 @@ def create_session(payload: SessionCreate, db: Session = Depends(get_db)):
     return session
 
 
-
 @router.get("", response_model=list[SessionOut])
 def list_sessions(habit_id: int | None = None, db: Session = Depends(get_db)):
-    stmt = select(SessionModel).order_by(SessionModel.date.desc())
+    # Desempate por id: sem isso, sessões do mesmo dia voltam em ordem arbitrária
+    # (o SQLite não garante nada) e a lista de Galhos fica instável entre chamadas.
+    stmt = select(SessionModel).order_by(SessionModel.date.desc(), SessionModel.id.desc())
     if habit_id is not None:
         stmt = stmt.where(SessionModel.habit_id == habit_id)
     return db.scalars(stmt).all()

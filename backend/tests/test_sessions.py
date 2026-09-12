@@ -102,3 +102,37 @@ def test_habito_sem_schema_aceita_qualquer_metrica(client):
         },
     )
     assert resp.status_code == 201
+
+
+def test_list_sessions_ordena_por_data_e_id_decrescente(client):
+    h = client.post("/api/habits", json={"name": "Ordem", "category": "misc"}).json()
+    antigo = client.post(
+        "/api/sessions", json={"habit_id": h["id"], "date": "2026-09-13", "duration_min": 10}
+    ).json()["id"]
+    recentes = [
+        client.post(
+            "/api/sessions", json={"habit_id": h["id"], "date": "2026-09-14", "duration_min": d}
+        ).json()["id"]
+        for d in (10, 20, 30)
+    ]
+
+    got = [s["id"] for s in client.get("/api/sessions").json()]
+    assert got == [recentes[2], recentes[1], recentes[0], antigo]
+
+
+def test_list_sessions_filtrada_mantem_ordem(client):
+    h = client.post("/api/habits", json={"name": "Ordem2", "category": "misc"}).json()
+    outro = client.post("/api/habits", json={"name": "Ordem3", "category": "misc"}).json()
+    ids = [
+        client.post(
+            "/api/sessions", json={"habit_id": h["id"], "date": "2026-09-14", "duration_min": d}
+        ).json()["id"]
+        for d in (10, 20)
+    ]
+    client.post(
+        "/api/sessions", json={"habit_id": outro["id"], "date": "2026-09-14", "duration_min": 99}
+    )
+
+    got = [s["id"] for s in client.get("/api/sessions", params={"habit_id": h["id"]}).json()]
+    assert got == [ids[1], ids[0]]
+
