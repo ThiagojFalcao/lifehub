@@ -18,8 +18,6 @@
   let barWidth = $derived(days.length ? barW * 0.64 : 0)
   let trend = $derived(days.map((d, i) => `${x(i)},${y(d.avg_7d)}`).join(' '))
   let gridY = $derived([0, 0.25, 0.5, 0.75, 1].map((f) => PAD.t + innerH - f * innerH))
-
-  let hover = $state(-1)
 </script>
 
 <svg
@@ -28,7 +26,6 @@
   viewBox={`0 0 ${W} ${H}`}
   role="img"
   aria-label="Floresta — hábitos completados por dia"
-  onmouseleave={() => (hover = -1)}
 >
   <!-- grid horizontal sutil (4 linhas) -->
   {#each gridY as gy}
@@ -44,9 +41,8 @@
       height={bh}
       fill={palette[d.color] ?? '#62666d'}
       rx="1.5"
-      opacity={hover === -1 || hover === i ? 1 : 0.45}
     >
-      <title>{d.date} — {d.completed} habitos</title>
+      <title>{d.date} — {d.completed} hábitos</title>
     </rect>
     <text x={x(i)} y={H - 12} text-anchor="middle" font-size="10" fill={labelColor} font-family="JetBrains Mono, monospace">
       {d.date.slice(5)}
@@ -62,5 +58,9 @@
 </svg>
 
 <style>
-  svg { display: block; }
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
 </style>
