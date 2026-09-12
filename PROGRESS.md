@@ -5,10 +5,13 @@
 >
 > **Orden de lectura en una sesión nueva:** `PROGRESS.md` → `AGENTS.md` → `git log --oneline -20`.
 > Regla de actualización en `CONTRIBUTING.md`.
+>
+> ⚠️ **Idioma:** o projeto migrou para **pt-BR** (UI, código e docs). As entradas antigas
+> deste arquivo estão em espanhol e ficam como registro histórico; **todo texto novo é em pt-BR**.
 
 ---
 
-## 1 · Visión general
+## 1 · Visão geral
 
 **LifeHub** — sistema local-first de telemetría personal y progresión de habilidades:
 tracker de hábitos no-binarios, visualización "Floresta", skill trees, XP, journal y coach IA.
@@ -26,6 +29,7 @@ Construcción **incremental, feature por feature**, con TDD y CI desde el inicio
 | M0 | Fundación: git init, `.gitignore`, convenciones, AGENTS, CI | — | ✅ concluido |
 | F1 | Vertical slice: tracker de hábitos + visualización Floresta | `docs/specs/000-vertical-slice.md` | ✅ concluido (95% + rediseño Linear dark) |
 | F2 | Journal + nota diária (híbrido) | — | ✅ concluido (backend+UI, 16 tests) |
+| F2.5 | Telemetria rica: **Árvore** + Galhos (`metrics_schema` vivo) | `docs/specs/001-telemetria-rica-arvore-galhos.md` | ✅ concluído (backend + UI, 65 tests) |
 | F3 | Skill trees (Tech / Ejercicio / Hidratación) + XP | — | ⬛ backlog |
 | F4 | RAG / Coach IA | — | ⬛ backlog |
 | F5 | Boss Battles | — | ⬛ backlog |
@@ -35,7 +39,7 @@ Construcción **incremental, feature por feature**, con TDD y CI desde el inicio
 
 ---
 
-## 3 · Estado actual
+## 3 · Estado atual
 
 **Milestone 0 — Fundación: ✅ CONCLUIDO.**
 
@@ -61,30 +65,43 @@ Construcción **incremental, feature por feature**, con TDD y CI desde el inicio
 - [x] **Backend** (TDD): modelo `JournalEntry` (1 por fecha, unique), schemas, router `/api/journal` — PUT upsert, GET list (ordenado desc + `?limit=`), GET por fecha (404 si no existe), PUT vacío elimina. **6 tests** nuevos (suite total: 16).
 - [x] **Frontend** (Svelte 5, design Linear): panel Journal no dashboard — editor markdown (textarea mono), select de mood, tags, lista "Entradas recientes" clicable (carga la entrada no editor).
 
+**Feature 2.5 — Telemetria rica (Árvore + Galhos): ✅ CONCLUÍDO.**
+
+- [x] **Backend** (TDD, commitado nas sessões 4): `GET /api/habits/{id}/tree?days=&end_on=` (intensidade por dia + média móvel 7d + cores + `summary` cumulativo), validação/coerção de `metrics` da sessão contra o `metrics_schema` do hábito (métrica declarada violada → 422 com motivo legível; métrica livre passa), ordem determinística em `GET /api/sessions` (`date desc, id desc`). **65 tests**, ruff limpo.
+- [x] **Frontend**: shell com **abas** (`Floresta` / `Árvore` / `Journal`) em pt-BR — `ArvoreArea.svelte` (seletor de hábito, `TreeChart`, progresso cumulativo, lista de Galhos com métricas), `JournalArea.svelte` (nota diária markdown + frontmatter, histórico clicável), `MetricsFields.svelte` e `NovoHabitPanel.svelte` (campos de métrica gerados do `metrics_schema`), `RegistrarPanel.svelte` (registro de sessão + floor plan). Build de produção **sem warnings de a11y**.
+- [x] **Bug corrigido pelo e2e**: limpar o editor do diário e salvar mostrava `Entry removed` como erro vermelho — a remoção (404 intencional do backend) agora é tratada como sucesso ("Entrada removida").
+- [x] **Harness de verificação viva**: `backend/scripts/e2e_verificacao.py` (HTTP real, banco isolado em `/tmp`, 30 checagens).
+
 ---
 
 ## 4 · Próximo passo
 
-1. **F3 — Skill trees** (Tech / Ejercicio / Hidratación) + XP, usando `metrics_schema` ya existente por hábito.
-2. **Proteger `main`** en GitHub (Settings → Branches → solo via PR) — sigue pendente.
-3. Podar el container efímero `lifehub-preview` quando termines de verificar la UI.
+1. **F3 — Skill trees** (Tech / Exercício / Hidratação) + XP, reaproveitando o `metrics_schema` que já existe por hábito.
+2. **Proteger `main`** no GitHub (Settings → Branches → só via PR) — segue pendente (hoje o push vai direto para `main`).
+3. Verificação **visual** das três abas no navegador (Floresta / Árvore / Journal) — o e2e cobre a API, não os olhos.
 
-> Comando de partida:
+> Comandos que funcionam **neste ambiente** (WSL, `/opt/data/lifehub-app`):
 > ```bash
-> cd /opt/data/lifehub-app/backend && uv run uvicorn app.main:app --reload --port 8000 &
-> cd /opt/data/lifehub-app/frontend && npm run dev
+> # backend (porta 8000) — .venv já existe em backend/.venv
+> cd /opt/data/lifehub-app/backend && ./.venv/bin/python -m uvicorn app.main:app --port 8000
+>
+> # frontend (porta 5173, proxy /api -> :8000)
+> cd /opt/data/lifehub-app/frontend && HOME=/opt/data npm run dev
+>
+> # verificação viva de ponta a ponta (não mexe no banco do usuário)
+> cd /opt/data/lifehub-app && backend/.venv/bin/python backend/scripts/e2e_verificacao.py
 > ```
 
 ---
 
-## 5 · En abierto (decisiones pendientes)
+## 5 · Em aberto (decisões pendentes)
 
 - [ ] Proteger `main` en GitHub (protección de rama solo-PR).
 - [ ] Verificación visual manual de la UI (opcional, ya cubierta por smoke e2e).
 
 ---
 
-## 6 · Conectar al GitHub (checklist)
+## 6 · Conectar ao GitHub (checklist)
 
 | Paso | Comando / acción | Estado |
 |------|------------------|--------|
@@ -95,9 +112,11 @@ Construcción **incremental, feature por feature**, con TDD y CI desde el inicio
 
 ---
 
-## 7 · Historial de sesiones
+## 7 · Histórico de sessões
 
-<!-- Formato: "- YYYY-MM-DD — resumen corto de lo que se hizo y de lo que quedó pendiente". -->
+<!-- Formato: "- YYYY-MM-DD — resumo curto do que foi feito e do que ficou pendente". -->
+
+- 2026-09-12 — **Sessão 4 (UI da telemetria rica, em pt-BR):** integrado o frontend que a sessão anterior deixou escrito mas não ligado — shell com abas (`Floresta` / `Árvore` / `Journal`), `ArvoreArea`, `JournalArea`, `MetricsFields`, `NovoHabitPanel`, `RegistrarPanel`, `TreeChart`; `index.html` com `lang="pt-BR"`; restos do starter Svelte removidos. Avisos de a11y do build zerados (hover morto removido dos gráficos, `<label>` que envolvia bloco de texto virou `<div>`). API reiniciada com o código novo (`/tree` saía 404 na instância velha). **Verificação viva** com novo harness `backend/scripts/e2e_verificacao.py`: 30 checagens em HTTP real (banco isolado) + leitura da instância do usuário e do proxy Vite. Achou **1 bug real de UX** (limpar o diário mostrava `Entry removed` como erro) — corrigido. DoD: pytest **65 passed**, ruff limpo, `npm run build` sem warnings. Pendente: proteção de `main`, F3 Skill trees, verificação visual das abas.
 
 - 2026-09-12 — **Sesión 3 (Rediseño UI + F2 Journal):** rediseño completo del frontend con sistema Linear dark (claude-design surface Monitor, anti-slop: 4/10 → 0/10). F2 Journal: modelo `JournalEntry` (1/fecha), router `/api/journal` (PUT upsert con delete-implicito, GET list desc + limit, GET 404), UI panel Journal (textarea markdown mono, mood, tags, entradas recientes). TDD: 4 tests nuevos journal → suite 14; luego 2 más para delete-implicito → suite **16 passed**. Ruff limpio. Verificación viva: container efímero `lifehub-preview` con portas públicas; e2e por proxy (PUT/GET journal OK, entradas recientes visibles no preview). Pendiente: `lifehub-preview` para derribar, proteger `main`, F3 Skill trees.
 - 2026-09-12 — **Sesión 2 (Frontend + integración):** commit de la Task C1 interrumpida (proxy Vite + `api.js`); C2 `ForestChart.svelte` (corregido a `$derived` para reactividad sin warnings); C3 `App.svelte` dashboard completo; Parte D: seed demo, smoke e2e real (health, habits, forest, POST sesión vía proxy Vite → Floresta se actualizó de rojo a amarillo en vivo, luego cleanup), README final. Backend 10/10 tests verdes. Todo pusheado a `origin/main`. Pendiente: protección de `main` en GitHub y verificación visual manual.

@@ -37,5 +37,7 @@ cd backend && uv run pytest -v
 - `GET/POST /api/habits`, `GET /api/habits/{id}`
 - `GET/POST /api/sessions?habit_id=`
 - `GET /api/forest?days=7&end_on=YYYY-MM-DD`
-- `GET/PUT /api/journal/{date}` (PUT upsert; vacío elimina)
-- `GET /api/journal?limit=30` (últimas entradas, más reciente primero)
+- `GET /api/habits/{id}/tree?days=30&end_on=YYYY-MM-DD` — Árvore: intensidade por dia + totais cumulativos
+- `GET /api/sessions?habit_id=` (ordem determinística: `date desc, id desc`)
+- `GET/PUT /api/journal/{date}` (PUT faz upsert; em branco **elimina** a entrada → 404 `Entry removed`)
+- `GET /api/journal?limit=30` (últimas entradas, mais recente primeiro)
