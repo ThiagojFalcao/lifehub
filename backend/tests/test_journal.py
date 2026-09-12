@@ -71,7 +71,7 @@ def test_journal_content_slice(client):
 
 
 def test_journal_blank_put_removes_entry(client):
-    """PUT com todo vazio elimina a entrada (diário físico: limpiar = borrar)."""
+    """PUT com todo vazio elimina a entrada (diário físico: limpar = apagar)."""
     client.put("/api/journal/2026-03-01", json={"content": "algo", "mood": "good", "tags": ["x"]})
 
     # Vazio elimina

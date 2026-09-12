@@ -22,16 +22,16 @@ def _get_or_404(db: Session, d: date) -> JournalEntry:
 
 @router.put("/{entry_date}", response_model=JournalEntryOut)
 def upsert_entry(entry_date: date, payload: JournalEntryUpsert, db: Session = Depends(get_db)):
-    """Crea o actualiza la entrada del journal para una fecha (upsert).
+    """Cria ou atualiza a entrada do journal para uma data (upsert).
 
-    Un PUT con `content`, `mood` y `tags` vacíos elimina la entrada
-    (para que vaciar el editor borre, como en un diario físico).
+    Um PUT com `content`, `mood` e `tags` vazios **elimina** a entrada
+    (para que limpar o editor apague, como num diário físico).
     """
     entry = db.scalar(select(JournalEntry).where(JournalEntry.date == entry_date))
     is_blank = not payload.content.strip() and not payload.mood and not payload.tags
 
     if entry is None and is_blank:
-        # No hay nada que guardar: no crear entrada vacía.
+        # Não há nada a guardar: não criar entrada vazia.
         raise HTTPException(status_code=404, detail="Nothing to save")
 
     if entry is None:
@@ -60,7 +60,7 @@ def list_entries(
     limit: int = Query(default=30, ge=1, le=365),
     db: Session = Depends(get_db),
 ):
-    """Lista entradas ordenadas por fecha desc (más reciente primero)."""
+    """Lista entradas ordenadas por data desc (mais recente primeiro)."""
     stmt = (
         select(JournalEntry)
         .order_by(JournalEntry.date.desc())
@@ -71,5 +71,5 @@ def list_entries(
 
 @router.get("/{entry_date}", response_model=JournalEntryOut)
 def get_entry(entry_date: date, db: Session = Depends(get_db)):
-    """Devuelve la entrada de una fecha; 404 si no existe."""
+    """Devolve a entrada de uma data; 404 se não existir."""
     return _get_or_404(db, entry_date)
