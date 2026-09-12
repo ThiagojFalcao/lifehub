@@ -24,8 +24,8 @@ Construcción **incremental, feature por feature**, con TDD y CI desde el inicio
 | # | Feature | Spec | Status |
 |---|---------|------|--------|
 | M0 | Fundación: git init, `.gitignore`, convenciones, AGENTS, CI | — | ✅ concluido |
-| F1 | Vertical slice: tracker de hábitos + visualización Floresta | `docs/specs/000-vertical-slice.md` | ✅ 96% — solo queda verificación visual manual |
-| F2 | Journal + nota diaria (híbrido) | `docs/specs/00X-journal.md` | ⬛ backlog |
+| F1 | Vertical slice: tracker de hábitos + visualización Floresta | `docs/specs/000-vertical-slice.md` | ✅ concluido (95% + rediseño Linear dark) |
+| F2 | Journal + nota diária (híbrido) | — | ✅ concluido (backend+UI, 16 tests) |
 | F3 | Skill trees (Tech / Ejercicio / Hidratación) + XP | — | ⬛ backlog |
 | F4 | RAG / Coach IA | — | ⬛ backlog |
 | F5 | Boss Battles | — | ⬛ backlog |
@@ -48,21 +48,26 @@ Construcción **incremental, feature por feature**, con TDD y CI desde el inicio
 - [x] Identidad git: `Thiago Falcão <167378662+ThiagojFalcao@users.noreply.github.com>`
 - [x] `gh` CLI instalado (v2.100.0) + autenticado + repo privado creado + push inicial
 
-**Feature 1 — Vertical slice (tracker + Floresta): 🔄 95% (C y D hechas, verificación visual manual pendiente).**
+**Feature 1 — Vertical slice (tracker + Floresta): ✅ CONCLUIDO.**
 
 - [x] **Parte A** — scaffold: `backend/pyproject.toml` (uv), frontend Vite+Svelte 5.
-- [x] **Parte B** — backend TDD completo: models, db, schemas, routers (habits/sessions/forest), servicio puro `compute_forest`. **10 tests pasando**, `ruff check` limpio.
-- [x] **Parte C** — frontend: proxy Vite + `api.js` + `ForestChart.svelte` (SVG con `$derived` reactivo) + `App.svelte` (dashboard). Build limpio sin warnings.
-- [x] **Parte D** — seed demo + smoke test e2e (POST sesión vía proxy + Floresta actualizada en vivo) + README final.
-- [ ] **Verificación visual manual** — abrir `http://localhost:5173` y confirmar que el gráfico SVG se ve (barras + línea azul). Yo lo dejé verificado por código (SVG compilado, API respondiendo), pero el pane de preview no renderiza localhost.
+- [x] **Parte B** — backend TDD: models, db, schemas, routers (habits/sessions/forest), serviço puro `compute_forest`. **10 tests pasando**, `ruff check` limpio.
+- [x] **Parte C** — frontend: proxy Vite + `api.js` + `ForestChart.svelte` (SVG, `$derived`) + `App.svelte` dashboard.
+- [x] **Parte D** — seed demo + smoke e2e + README final.
+- [x] **Rediseño UI** — sistema Linear dark (Inter cv01/ss03 + JetBrains Mono, indigo `#5e6ad2`, borders semitransparentes, luminance stacking). Slop score 4/10 → 0/10.
+
+**Feature 2 — Journal (híbrido markdown + frontmatter): ✅ CONCLUIDO.**
+
+- [x] **Backend** (TDD): modelo `JournalEntry` (1 por fecha, unique), schemas, router `/api/journal` — PUT upsert, GET list (ordenado desc + `?limit=`), GET por fecha (404 si no existe), PUT vacío elimina. **6 tests** nuevos (suite total: 16).
+- [x] **Frontend** (Svelte 5, design Linear): panel Journal no dashboard — editor markdown (textarea mono), select de mood, tags, lista "Entradas recientes" clicable (carga la entrada no editor).
 
 ---
 
-## 4 · Próximo paso
+## 4 · Próximo passo
 
-1. **Verificación visual opcional**: `cd frontend && npm run dev` → abrir `http://localhost:5173` (con backend en 8000).
-2. **Proteger `main`** en GitHub (Settings → Branches → solo via PR) — sigue pendiente.
-3. **F2 — Journal** (híbrido markdown + frontmatter + endpoint), siguiendo el roadmap.
+1. **F3 — Skill trees** (Tech / Ejercicio / Hidratación) + XP, usando `metrics_schema` ya existente por hábito.
+2. **Proteger `main`** en GitHub (Settings → Branches → solo via PR) — sigue pendente.
+3. Podar el container efímero `lifehub-preview` quando termines de verificar la UI.
 
 > Comando de partida:
 > ```bash
@@ -94,5 +99,6 @@ Construcción **incremental, feature por feature**, con TDD y CI desde el inicio
 
 <!-- Formato: "- YYYY-MM-DD — resumen corto de lo que se hizo y de lo que quedó pendiente". -->
 
+- 2026-09-12 — **Sesión 3 (Rediseño UI + F2 Journal):** rediseño completo del frontend con sistema Linear dark (claude-design surface Monitor, anti-slop: 4/10 → 0/10). F2 Journal: modelo `JournalEntry` (1/fecha), router `/api/journal` (PUT upsert con delete-implicito, GET list desc + limit, GET 404), UI panel Journal (textarea markdown mono, mood, tags, entradas recientes). TDD: 4 tests nuevos journal → suite 14; luego 2 más para delete-implicito → suite **16 passed**. Ruff limpio. Verificación viva: container efímero `lifehub-preview` con portas públicas; e2e por proxy (PUT/GET journal OK, entradas recientes visibles no preview). Pendiente: `lifehub-preview` para derribar, proteger `main`, F3 Skill trees.
 - 2026-09-12 — **Sesión 2 (Frontend + integración):** commit de la Task C1 interrumpida (proxy Vite + `api.js`); C2 `ForestChart.svelte` (corregido a `$derived` para reactividad sin warnings); C3 `App.svelte` dashboard completo; Parte D: seed demo, smoke e2e real (health, habits, forest, POST sesión vía proxy Vite → Floresta se actualizó de rojo a amarillo en vivo, luego cleanup), README final. Backend 10/10 tests verdes. Todo pusheado a `origin/main`. Pendiente: protección de `main` en GitHub y verificación visual manual.
 - 2026-09-11 — **Sesión 1 (Fundación + Backend):** M0 concluido (git init, convenciones, AGENTS, CI, gh auth, repo `ThiagojFalcao/lifehub` creado + push inicial). Parte B backend TDD: models, db, conftest, schemas, routers habits/sessions/forest, `compute_forest`, 10 tests verdes.

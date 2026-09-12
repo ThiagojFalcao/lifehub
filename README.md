@@ -37,3 +37,5 @@ cd backend && uv run pytest -v
 - `GET/POST /api/habits`, `GET /api/habits/{id}`
 - `GET/POST /api/sessions?habit_id=`
 - `GET /api/forest?days=7&end_on=YYYY-MM-DD`
+- `GET/PUT /api/journal/{date}` (PUT upsert; vacío elimina)
+- `GET /api/journal?limit=30` (últimas entradas, más reciente primero)
