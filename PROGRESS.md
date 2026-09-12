@@ -30,7 +30,7 @@ Construcción **incremental, feature por feature**, con TDD y CI desde el inicio
 | F1 | Vertical slice: tracker de hábitos + visualización Floresta | `docs/specs/000-vertical-slice.md` | ✅ concluido (95% + rediseño Linear dark) |
 | F2 | Journal + nota diária (híbrido) | — | ✅ concluido (backend+UI, 16 tests) |
 | F2.5 | Telemetria rica: **Árvore** + Galhos (`metrics_schema` vivo) | `docs/specs/001-telemetria-rica-arvore-galhos.md` | ✅ concluído (backend + UI, 65 tests) |
-| F3 | Skill trees (Tech / Ejercicio / Hidratación) + XP | — | ⬛ backlog |
+| F3 | Skill trees (Tech / Ejercicio / Hidratación / Geral) + XP | `docs/specs/002-skill-trees-xp.md` | ✅ concluído (backend + UI, 95 tests) |
 | F4 | RAG / Coach IA | — | ⬛ backlog |
 | F5 | Boss Battles | — | ⬛ backlog |
 | F6 | git auto-sync + Docker (portabilidad) | — | ⬛ backlog |
@@ -72,13 +72,20 @@ Construcción **incremental, feature por feature**, con TDD y CI desde el inicio
 - [x] **Bug corrigido pelo e2e**: limpar o editor do diário e salvar mostrava `Entry removed` como erro vermelho — a remoção (404 intencional do backend) agora é tratada como sucesso ("Entrada removida").
 - [x] **Harness de verificação viva**: `backend/scripts/e2e_verificacao.py` (HTTP real, banco isolado em `/tmp`, 30 checagens).
 
+**Feature 3 — Skill trees + XP (derivado): ✅ CONCLUÍDO.**
+
+- [x] **Spec** `docs/specs/002-skill-trees-xp.md` aprovada (2026-09-12) — XP **derivado** das sessões (sem coluna nova, sem migração), fórmula tunável, curva triangular, categoria → árvore com fallback `Geral`.
+- [x] **Backend** (TDD): `app/services/skills.py` — `xp_of_session`, `nivel_de_xp` (curva triangular), `tree_for_category`, `compute_skills` (streak por hábito em passada ordenada, breakdown `base`/`floor_plan`/`metrics`/`streak`, arredondamento half-up no total), schemas `SkillsOut`/`SkillTreeOut`/`SkillHabitOut`/`SkillBreakdown`, router `GET /api/skills?end_on=` + registro no `main`. **30 testes novos** (25 unit + 5 API) → suíte **95 passed**, ruff limpo.
+- [x] **Frontend**: aba **Habilidades** (`HabilidadesArea.svelte` + CSS `.level-bar`/`.tree-card` etc.) — nível geral com barra de progresso, regras de XP, grid de cards por árvore (Tech / Exercício / Hidratação / Geral) com level, breakdown e hábitos. Build **sem warnings**.
+- [x] **E2E vivo**: harness cobre `/api/skills` (ordem das árvores, total_xp, breakdown fecha, banco vazio → 200, instância real + proxy) — **todas as checagens passam**.
+
 ---
 
 ## 4 · Próximo passo
 
-1. **F3 — Skill trees** (Tech / Exercício / Hidratação) + XP, reaproveitando o `metrics_schema` que já existe por hábito.
+1. **F4 — RAG / Coach IA**: embeddings locais + Openrouter (chat), respostas com contexto dos dados (journal + hábitos + sessões). É a feature de maior valor percebido depois do XP.
 2. **Proteger `main`** no GitHub (Settings → Branches → só via PR) — segue pendente (hoje o push vai direto para `main`).
-3. Verificação **visual** das três abas no navegador (Floresta / Árvore / Journal) — o e2e cobre a API, não os olhos.
+3. Verificação **visual** da aba Habilidades no navegador (Floresta / Árvore / Journal / Habilidades) — o e2e cobre a API, não os olhos.
 
 > Comandos que funcionam **neste ambiente** (WSL, `/opt/data/lifehub-app`):
 > ```bash
@@ -115,6 +122,8 @@ Construcción **incremental, feature por feature**, con TDD y CI desde el inicio
 ## 7 · Histórico de sessões
 
 <!-- Formato: "- YYYY-MM-DD — resumo curto do que foi feito e do que ficou pendente". -->
+
+- 2026-09-12 — **Sessão 5 (F3 Skill trees + XP):** completou a F3 que a sessão anterior deixou em RED — `compute_skills`/`tree_for_category`/`TREES` em `app/services/skills.py` (XP derivado, streak por hábito, breakdown, half-up no total), schemas + router `GET /api/skills?end_on=` registrado no `main`, `tests/test_skills_api.py` (5 testes). Suíte **95 passed**, ruff limpo (corrigiu `RUF046` e `RUF034`). Frontend: aba **Habilidades** (`HabilidadesArea.svelte` + CSS) com nível geral, regras de XP e cards por árvore; build sem warnings. E2E vivo estendido para `/api/skills` (+6 checagens na instância isolada, banco vazio → 200, instância real e proxy) — **todas passaram**. Sandbox real: `Estudo Tech` → 420 XP → nível 3 (bate com o sanity check da spec). Pendente: commit+push da F3, proteção de `main`, verificação visual, F4 RAG/Coach IA.
 
 - 2026-09-12 — **Sessão 4 (UI da telemetria rica, em pt-BR):** integrado o frontend que a sessão anterior deixou escrito mas não ligado — shell com abas (`Floresta` / `Árvore` / `Journal`), `ArvoreArea`, `JournalArea`, `MetricsFields`, `NovoHabitPanel`, `RegistrarPanel`, `TreeChart`; `index.html` com `lang="pt-BR"`; restos do starter Svelte removidos. Avisos de a11y do build zerados (hover morto removido dos gráficos, `<label>` que envolvia bloco de texto virou `<div>`). API reiniciada com o código novo (`/tree` saía 404 na instância velha). **Verificação viva** com novo harness `backend/scripts/e2e_verificacao.py`: 30 checagens em HTTP real (banco isolado) + leitura da instância do usuário e do proxy Vite. Achou **1 bug real de UX** (limpar o diário mostrava `Entry removed` como erro) — corrigido. DoD: pytest **65 passed**, ruff limpo, `npm run build` sem warnings. Pendente: proteção de `main`, F3 Skill trees, verificação visual das abas.
 
