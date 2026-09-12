@@ -4,15 +4,15 @@
   const W = 640
   const H = 260
   const PAD = 28
-  const barW = days.length ? (W - PAD * 2) / days.length : 1
   const palette = { green: '#22c55e', yellow: '#eab308', red: '#ef4444' }
 
-  const max = Math.max(10, ...days.map((d) => Math.max(d.completed, d.avg_7d)))
-  const x = (i) => PAD + i * barW + barW / 2
-  const y = (v) => H - PAD - (v / max) * (H - PAD * 2)
-  const barX = (i) => PAD + i * barW + barW * 0.15
-  const barWidth = days.length ? barW * 0.7 : 0
-  const trend = days.map((d, i) => `${x(i)},${y(d.avg_7d)}`).join(' ')
+  let barW = $derived(days.length ? (W - PAD * 2) / days.length : 1)
+  let max = $derived(Math.max(10, ...days.map((d) => Math.max(d.completed, d.avg_7d))))
+  let x = $derived((i) => PAD + i * barW + barW / 2)
+  let y = $derived((v) => H - PAD - (v / max) * (H - PAD * 2))
+  let barX = $derived((i) => PAD + i * barW + barW * 0.15)
+  let barWidth = $derived(days.length ? barW * 0.7 : 0)
+  let trend = $derived(days.map((d, i) => `${x(i)},${y(d.avg_7d)}`).join(' '))
 </script>
 
 <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Floresta">
