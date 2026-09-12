@@ -4,11 +4,13 @@
   import FlorestaArea from './lib/FlorestaArea.svelte'
   import ArvoreArea from './lib/ArvoreArea.svelte'
   import JournalArea from './lib/JournalArea.svelte'
+  import HabilidadesArea from './lib/HabilidadesArea.svelte'
 
   const AREAS = [
     ['floresta', 'Floresta'],
     ['arvore', 'Árvore'],
     ['journal', 'Journal'],
+    ['habilidades', 'Habilidades'],
   ]
 
   let area = $state('floresta')
@@ -66,6 +68,8 @@
   <FlorestaArea {habits} {forest} onsaved={load} />
 {:else if area === 'arvore'}
   <ArvoreArea {habits} />
+{:else if area === 'habilidades'}
+  <HabilidadesArea />
 {:else}
   <JournalArea />
 {/if}
