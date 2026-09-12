@@ -39,6 +39,13 @@ Frontend (a partir de `frontend/`):
 - `npm run dev` — dev server (proxy `/api` -> 8000)
 - `npm run build` — build de produção
 
+## Como retomar (ao iniciar qualquer sessão)
+
+1. Ler `PROGRESS.md` (estado atual + próximo passo + decisões em aberto).
+2. Ler este arquivo e `CONTRIBUTING.md` se não estiver em contexto.
+3. `git log --oneline -20` para a história recente.
+4. Nunca re-decidir algo já registrado como fechado — avançar a partir do `Próximo passo`.
+
 ## Convenções
 
 - Mensagens de commit em **Conventional Commits** (ver `CONTRIBUTING.md`).

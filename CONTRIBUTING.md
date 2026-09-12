@@ -53,6 +53,17 @@ Regras:
 3. Commits frequentes seguindo Conventional Commits.
 4. PR pequeno → review → squash-merge.
 
+## Continuidade entre sessões (flight recorder)
+
+O contexto da sessão de chat é **efêmero**. A memória durável do projeto vive no repo.
+
+- Ao fim de **toda sessão de trabalho**, atualizar `PROGRESS.md` **antes** do commit final:
+  - `Estado atual` (checkboxes do que ficou pronto),
+  - `Próximo passo` (o comando/arquivo exato, sem reler o plano),
+  - `Em aberto` (decisões pendentes),
+  - linha nova em `Histórico de sessões`.
+- Uma sessão nova retoma lendo, **nesta ordem**: `PROGRESS.md` → `AGENTS.md` → `git log`.
+
 ## Definição de Pronto (Definition of Done)
 
 Uma feature está pronta quando:
