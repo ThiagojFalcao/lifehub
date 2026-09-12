@@ -1,21 +1,21 @@
 # PROGRESS.md — LifeHub
 
-> **Flight recorder do projeto.** Este arquivo é a fonte de verdade do "onde estamos".
-> Atualizado ao fim de **toda sessão de trabalho** — e reaberto em **toda sessão nova**.
+> **Flight recorder del proyecto.** Este archivo es la fuente de verdad del "dónde estamos".
+> Actualizado al final de **toda sesión de trabajo** — y reabierto en **toda sesión nueva**.
 >
-> **Ordem de leitura numa sessão nova:** `PROGRESS.md` → `AGENTS.md` → `git log --oneline -20`.
-> Regra de atualização em `CONTRIBUTING.md`.
+> **Orden de lectura en una sesión nueva:** `PROGRESS.md` → `AGENTS.md` → `git log --oneline -20`.
+> Regla de actualización en `CONTRIBUTING.md`.
 
 ---
 
-## 1 · Visão geral
+## 1 · Visión general
 
-**LifeHub** — sistema local-first de telemetria pessoal e progressão de habilidades:
-tracker de hábitos não-binários, visualização "Floresta", skill trees, XP, journal e coach IA.
-Construção **incremental, feature por feature**, com TDD e CI desde o início.
+**LifeHub** — sistema local-first de telemetría personal y progresión de habilidades:
+tracker de hábitos no-binarios, visualización "Floresta", skill trees, XP, journal y coach IA.
+Construcción **incremental, feature por feature**, con TDD y CI desde el inicio.
 
 **Stack:** Python 3.13 · FastAPI · SQLAlchemy 2.0 · SQLite · Svelte 5 · Vite · GitHub Actions.
-**Repo:** privado no GitHub (`ThiagojFalcao`) — ainda a ser criado.
+**Repo:** privado en GitHub (`ThiagojFalcao/lifehub`).
 
 ---
 
@@ -23,74 +23,76 @@ Construção **incremental, feature por feature**, com TDD e CI desde o início.
 
 | # | Feature | Spec | Status |
 |---|---------|------|--------|
-| M0 | Fundação: git init, `.gitignore`, convenções, AGENTS, CI | — | ✅ concluído |
-| F1 | Vertical slice: tracker de hábitos + visualização Floresta | `docs/specs/000-vertical-slice.md` | ⬜ não iniciado |
-| F2 | Journal + nota diária (híbrido) | `docs/specs/00X-journal.md` | ⬛ backlog |
-| F3 | Skill trees (Tech / Exercício / Hidratação) + XP | — | ⬛ backlog |
+| M0 | Fundación: git init, `.gitignore`, convenciones, AGENTS, CI | — | ✅ concluido |
+| F1 | Vertical slice: tracker de hábitos + visualización Floresta | `docs/specs/000-vertical-slice.md` | ✅ 96% — solo queda verificación visual manual |
+| F2 | Journal + nota diaria (híbrido) | `docs/specs/00X-journal.md` | ⬛ backlog |
+| F3 | Skill trees (Tech / Ejercicio / Hidratación) + XP | — | ⬛ backlog |
 | F4 | RAG / Coach IA | — | ⬛ backlog |
 | F5 | Boss Battles | — | ⬛ backlog |
-| F6 | git auto-sync + Docker (portabilidade) | — | ⬛ backlog |
+| F6 | git auto-sync + Docker (portabilidad) | — | ⬛ backlog |
 
-> ⬜ = próximo / em andamento · ⬛ = backlog (goal do usuário: subir feature por feature no GitHub).
+> ⬜ = próximo / en desarrollo · ⬛ = backlog (objetivo del usuario: subir feature por feature en GitHub).
 
 ---
 
-## 3 · Estado atual
+## 3 · Estado actual
 
-**Milestone 0 — Fundação: ✅ CONCLUÍDO.**
+**Milestone 0 — Fundación: ✅ CONCLUIDO.**
 
 - [x] `git init` + `.gitignore` (backend/frontend/db/env)
-- [x] `CONTRIBUTING.md` — convenções de commit/PR + flight recorder
-- [x] `AGENTS.md` — contexto técnico + "como retomar"
+- [x] `CONTRIBUTING.md` — convenciones de commit/PR + flight recorder
+- [x] `AGENTS.md` — contexto técnico + "cómo retomar"
 - [x] `README.md`
-- [x] `docs/specs/000-vertical-slice.md` — spec da F1
-- [x] `.github/workflows/ci.yml` — ruff + pytest + build em todo PR
-- [x] Identidade git: `Thiago Falcão <167378662+ThiagojFalcao@users.noreply.github.com>`
-- [x] `gh` CLI instalado (v2.100.0) + autenticado + repo privado criado + push inicial
+- [x] `docs/specs/000-vertical-slice.md` — spec de la F1
+- [x] `.github/workflows/ci.yml` — ruff + pytest + build en todo PR
+- [x] Identidad git: `Thiago Falcão <167378662+ThiagojFalcao@users.noreply.github.com>`
+- [x] `gh` CLI instalado (v2.100.0) + autenticado + repo privado creado + push inicial
 
-**Feature 1 — Vertical slice (tracker + Floresta): 🔄 EM ANDAMENTO (~60%).**
+**Feature 1 — Vertical slice (tracker + Floresta): 🔄 95% (C y D hechas, verificación visual manual pendiente).**
 
 - [x] **Parte A** — scaffold: `backend/pyproject.toml` (uv), frontend Vite+Svelte 5.
-- [x] **Parte B** — backend TDD completo: models, db, schemas, routers (habits/sessions/forest), serviço puro `compute_forest`. **10 testes passando**, `ruff check` limpo.
-- [ ] **Parte C** — frontend: proxy Vite + `api.js` + `ForestChart.svelte` + `App.svelte`.
-- [ ] **Parte D** — seed demo + smoke test e2e + README final.
+- [x] **Parte B** — backend TDD completo: models, db, schemas, routers (habits/sessions/forest), servicio puro `compute_forest`. **10 tests pasando**, `ruff check` limpio.
+- [x] **Parte C** — frontend: proxy Vite + `api.js` + `ForestChart.svelte` (SVG con `$derived` reactivo) + `App.svelte` (dashboard). Build limpio sin warnings.
+- [x] **Parte D** — seed demo + smoke test e2e (POST sesión vía proxy + Floresta actualizada en vivo) + README final.
+- [ ] **Verificación visual manual** — abrir `http://localhost:5173` y confirmar que el gráfico SVG se ve (barras + línea azul). Yo lo dejé verificado por código (SVG compilado, API respondiendo), pero el pane de preview no renderiza localhost.
 
 ---
 
-## 4 · Próximo passo
+## 4 · Próximo paso
 
-1. **Autenticar `gh`** (precisa do usuário — ver seção 6):
-   `gh auth login` → GitHub.com → HTTPS → *Login with a web browser* (gera código 8-dígitos).
-2. **Criar repo privado + push inicial** (ver seção 6).
-3. **Feature 1**: montar scaffold (Parte A do plano), depois backend TDD (Parte B).
+1. **Verificación visual opcional**: `cd frontend && npm run dev` → abrir `http://localhost:5173` (con backend en 8000).
+2. **Proteger `main`** en GitHub (Settings → Branches → solo via PR) — sigue pendiente.
+3. **F2 — Journal** (híbrido markdown + frontmatter + endpoint), siguiendo el roadmap.
 
-> Comando de partida da F1 (após scaffold):
-> `cd backend && uv sync && uv run pytest -v` → esperado `10 passed`.
-
----
-
-## 5 · Em aberto (decisões pendentes)
-
-- [ ] Autenticar `gh` (pendente de interação do usuário).
-- [ ] Criar repo privado no GitHub (nome sugerido: `lifehub`).
-- [ ] Feature 1: implementar via subagente ou direto (recomendo subagente).
-- [ ] Push inicial: com os 5 commits atuais da M0.
+> Comando de partida:
+> ```bash
+> cd /opt/data/lifehub-app/backend && uv run uvicorn app.main:app --reload --port 8000 &
+> cd /opt/data/lifehub-app/frontend && npm run dev
+> ```
 
 ---
 
-## 6 · Conectar ao GitHub (checklist)
+## 5 · En abierto (decisiones pendientes)
 
-| Passo | Comando / ação | Estado |
-|-------|----------------|--------|
-| 1. Autenticar `gh` | `gh auth login` (browser → colar código) | ❌ pendente |
-| 2. Criar repo privado | `gh repo create lifehub --private --source=. --remote=origin --push` | ❌ pendente |
-| 3. Push inicial | (coberto pelo `--push` acima) | ❌ pendente |
-| 4. Proteger `main` | GitHub → Settings → Branches → proteção (só via PR) | ❌ pendente |
+- [ ] Proteger `main` en GitHub (protección de rama solo-PR).
+- [ ] Verificación visual manual de la UI (opcional, ya cubierta por smoke e2e).
 
 ---
 
-## 7 · Histórico de sessões
+## 6 · Conectar al GitHub (checklist)
 
-<!-- Formato: "- YYYY-MM-DD — resumo curto do que foi feito e do que ficou pendente". -->
+| Paso | Comando / acción | Estado |
+|------|------------------|--------|
+| 1. Autenticar `gh` | `gh auth login` (browser → pegar código) | ✅ en sesión anterior |
+| 2. Crear repo privado | `gh repo create lifehub --private --source=. --remote=origin --push` | ✅ `ThiagojFalcao/lifehub` |
+| 3. Push inicial | (cubierto por el `--push` de arriba) | ✅ push continuo en cada commit |
+| 4. Proteger `main` | GitHub → Settings → Branches → protección (solo vía PR) | ❌ pendiente |
 
-- 2026-09-12 — M0 concluído (fundação + gh instalado). Criado `PROGRESS.md` como flight recorder. Pendente: autenticar `gh` e criar repo.
+---
+
+## 7 · Historial de sesiones
+
+<!-- Formato: "- YYYY-MM-DD — resumen corto de lo que se hizo y de lo que quedó pendiente". -->
+
+- 2026-09-12 — **Sesión 2 (Frontend + integración):** commit de la Task C1 interrumpida (proxy Vite + `api.js`); C2 `ForestChart.svelte` (corregido a `$derived` para reactividad sin warnings); C3 `App.svelte` dashboard completo; Parte D: seed demo, smoke e2e real (health, habits, forest, POST sesión vía proxy Vite → Floresta se actualizó de rojo a amarillo en vivo, luego cleanup), README final. Backend 10/10 tests verdes. Todo pusheado a `origin/main`. Pendiente: protección de `main` en GitHub y verificación visual manual.
+- 2026-09-11 — **Sesión 1 (Fundación + Backend):** M0 concluido (git init, convenciones, AGENTS, CI, gh auth, repo `ThiagojFalcao/lifehub` creado + push inicial). Parte B backend TDD: models, db, conftest, schemas, routers habits/sessions/forest, `compute_forest`, 10 tests verdes.
