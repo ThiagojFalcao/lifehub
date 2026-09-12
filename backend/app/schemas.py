@@ -56,6 +56,32 @@ class ForestOut(BaseModel):
     days: list[ForestDay]
 
 
+class TreeDay(BaseModel):
+    date: date
+    sessions: int
+    duration_min: int
+    avg_7d_min: float
+    color: str
+
+
+class TreeSummary(BaseModel):
+    """Totais cumulativos do hábito (todo o histórico, não só a janela)."""
+
+    total_sessions: int
+    total_min: int
+    total_hours: float
+    active_days: int
+    current_streak: int
+    best_streak: int
+    avg_min_per_active_day: float
+
+
+class TreeOut(BaseModel):
+    habit: HabitOut
+    days: list[TreeDay]
+    summary: TreeSummary
+
+
 class JournalEntryUpsert(BaseModel):
     """Payload do PUT /api/journal/{date} (upsert)."""
 
