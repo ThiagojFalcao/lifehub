@@ -167,6 +167,29 @@ try:
     req(API, "/api/journal/2026-09-12", esperado=404)
     _, lista = req(API, "/api/journal?limit=5", esperado=200)
     check("entrada removida sai da listagem", all(e["date"] != "2026-09-12" for e in lista))
+
+    # --- Skills (Spec 002) ---
+    _, skills = req(API, "/api/skills?end_on=2026-09-12", esperado=200)
+    check(
+        "skills: 4 árvores na ordem esperada",
+        [t["id"] for t in skills["trees"]] == ["tech", "exercicio", "hidratacao", "geral"],
+        str([t["id"] for t in skills["trees"]]),
+    )
+    check("skills: total_xp > 0 no seed", skills["total_xp"] > 0, f"total_xp={skills['total_xp']}")
+    check("skills: nível da árvore tech", skills["trees"][0]["level"] >= 1, str(skills["trees"][0]["level"]))
+    check(
+        "skills: breakdown fecha com o XP da árvore",
+        sum(skills["trees"][0]["breakdown"].values()) == skills["trees"][0]["xp"],
+        str(skills["trees"][0]),
+    )
+    check(
+        "skills: hábito E2E Foco está na árvore Tech",
+        any(h["name"] == "E2E Foco" for h in skills["trees"][0]["habits"]),
+        str([h["name"] for h in skills["trees"][0]["habits"]]),
+    )
+    # Critério de aceite: banco vazio não pode dar 500 nem lista vazia.
+    _, vazio = req("http://localhost:8010", "/api/skills?end_on=1999-01-01", esperado=200)
+    check("skills: nenhuma sessão até 1999 -> total 0, 4 árvores nível 1", vazio["total_xp"] == 0 and all(t["level"] == 1 for t in vazio["trees"]), str(vazio["total_xp"]))
 finally:
     proc.terminate()
     proc.wait(timeout=10)
@@ -181,11 +204,15 @@ if real_hab:
 _, fr = req(REAL, "/api/forest?days=14", esperado=200)
 check("Floresta responde 14 dias", len(fr["days"]) == 14)
 req(REAL, "/api/journal?limit=5", esperado=200)
+_, rs = req(REAL, "/api/skills", esperado=200)
+check("Skills da instância real responde", len(rs["trees"]) == 4 and rs["total_xp"] >= 0, f"total_xp={rs['total_xp']}")
 
 print("\n=== 3. Proxy do frontend (:5173 -> :8000) ===")
 req("http://localhost:5173", "/api/health", esperado=200)
 _, ph = req("http://localhost:5173", "/api/habits", esperado=200)
 check("proxy entrega os hábitos", isinstance(ph, list) and len(ph) >= 3, f"{len(ph) if isinstance(ph, list) else ph}")
+_, ps = req("http://localhost:5173", "/api/skills", esperado=200)
+check("proxy entrega as skills", isinstance(ps, dict) and len(ps["trees"]) == 4, f"{ps}")
 
 print("\n=== RESULTADO ===")
 if falhas:
