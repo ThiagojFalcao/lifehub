@@ -54,3 +54,21 @@ class ForestDay(BaseModel):
 
 class ForestOut(BaseModel):
     days: list[ForestDay]
+
+
+class JournalEntryUpsert(BaseModel):
+    """Payload do PUT /api/journal/{date} (upsert)."""
+
+    content: str = ""
+    mood: str | None = Field(default=None, max_length=30)
+    tags: list[str] = Field(default_factory=list)
+
+
+class JournalEntryOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    date: date
+    content: str
+    mood: str | None
+    tags: list[str]
+    updated_at: datetime

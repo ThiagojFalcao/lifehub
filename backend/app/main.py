@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .db import init_db
-from .routers import forest, habits, sessions
+from .routers import forest, habits, journal, sessions
 
 
 @asynccontextmanager
@@ -32,3 +32,4 @@ def health():
 app.include_router(habits.router, prefix="/api")
 app.include_router(sessions.router, prefix="/api")
 app.include_router(forest.router, prefix="/api")
+app.include_router(journal.router, prefix="/api")

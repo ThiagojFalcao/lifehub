@@ -47,3 +47,21 @@ class Session(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     habit: Mapped[Habit] = relationship(back_populates="sessions")
+
+
+class JournalEntry(Base):
+    """Entrada do journal híbrido: uma por data, markdown + frontmatter rico."""
+
+    __tablename__ = "journal_entries"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    # Una entrada por dia (upsert via PUT)
+    date: Mapped[date] = mapped_column(Date, unique=True, index=True)
+    content: Mapped[str] = mapped_column(Text, default="")
+    # frontmatter "rico": mood, tags, etc. (schema evolutivo)
+    mood: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    tags: Mapped[list] = mapped_column(JSON, default=list)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, onupdate=utcnow
+    )
