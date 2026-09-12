@@ -68,3 +68,23 @@ def test_journal_content_slice(client):
     # Mais recente primeiro: 2026-02-05, 04, 03
     assert page[0]["date"] == "2026-02-05"
     assert page[2]["date"] == "2026-02-03"
+
+
+def test_journal_blank_put_removes_entry(client):
+    """PUT com todo vazio elimina a entrada (diário físico: limpiar = borrar)."""
+    client.put("/api/journal/2026-03-01", json={"content": "algo", "mood": "good", "tags": ["x"]})
+
+    # Vazio elimina
+    r = client.put("/api/journal/2026-03-01", json={"content": "", "mood": None, "tags": []})
+    assert r.status_code == 404
+
+    # Ya no existe
+    assert client.get("/api/journal/2026-03-01").status_code == 404
+    assert client.get("/api/journal").json() == []
+
+
+def test_journal_blank_put_on_missing_does_not_create(client):
+    """PUT vazio sobre una fecha sin entrada NO crea nada (404)."""
+    r = client.put("/api/journal/2026-04-01", json={"content": "  ", "mood": None, "tags": []})
+    assert r.status_code == 404
+    assert client.get("/api/journal").json() == []

@@ -22,8 +22,18 @@ def _get_or_404(db: Session, d: date) -> JournalEntry:
 
 @router.put("/{entry_date}", response_model=JournalEntryOut)
 def upsert_entry(entry_date: date, payload: JournalEntryUpsert, db: Session = Depends(get_db)):
-    """Crea o actualiza la entrada del journal para una fecha (upsert)."""
+    """Crea o actualiza la entrada del journal para una fecha (upsert).
+
+    Un PUT con `content`, `mood` y `tags` vacíos elimina la entrada
+    (para que vaciar el editor borre, como en un diario físico).
+    """
     entry = db.scalar(select(JournalEntry).where(JournalEntry.date == entry_date))
+    is_blank = not payload.content.strip() and not payload.mood and not payload.tags
+
+    if entry is None and is_blank:
+        # No hay nada que guardar: no crear entrada vacía.
+        raise HTTPException(status_code=404, detail="Nothing to save")
+
     if entry is None:
         entry = JournalEntry(
             date=entry_date,
@@ -32,6 +42,10 @@ def upsert_entry(entry_date: date, payload: JournalEntryUpsert, db: Session = De
             tags=list(payload.tags),
         )
         db.add(entry)
+    elif is_blank:
+        db.delete(entry)
+        db.commit()
+        raise HTTPException(status_code=404, detail="Entry removed")
     else:
         entry.content = payload.content
         entry.mood = payload.mood
