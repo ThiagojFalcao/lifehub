@@ -98,3 +98,44 @@ class JournalEntryOut(BaseModel):
     mood: str | None
     tags: list[str]
     updated_at: datetime
+
+
+# --- Skills (Spec 002) ------------------------------------------------------
+
+
+class SkillBreakdown(BaseModel):
+    base: int
+    floor_plan: int
+    metrics: int
+    streak: int
+
+
+class SkillHabitOut(BaseModel):
+    id: int
+    name: str
+    xp: int
+    level: int
+    xp_no_nivel: int
+    xp_para_proximo: int
+    progresso: float
+
+
+class SkillTreeOut(BaseModel):
+    id: str
+    name: str
+    xp: int
+    level: int
+    xp_no_nivel: int
+    xp_para_proximo: int
+    progresso: float
+    breakdown: SkillBreakdown
+    habits: list[SkillHabitOut]
+
+
+class SkillsOut(BaseModel):
+    total_xp: int
+    level: int
+    xp_no_nivel: int
+    xp_para_proximo: int
+    progresso: float
+    trees: list[SkillTreeOut]
